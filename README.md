@@ -70,11 +70,16 @@ $ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 $ sudo apt-get install -y nodejs
 ```
 
-Clone the project:
+Clone and install the project:
 ```
 $ git clone https://github.com/jlguenego/example_https.git
 $ cd example_https
 $ npm i
+```
+
+Configure it for production:
+```
+$ cp https.prod.config.js config.js
 $ sudo npm i -g forever
 ```
 
@@ -99,23 +104,60 @@ Thanks to https://github.com/certbot/certbot for allowing us to get easily a HTT
 Now we do the job:
 
 ```
-$ sudo apt-get install certbot -t stretch-backports
-$ sudo certbot certonly
+$ sudo apt-get install -y certbot -t stretch-backports
 ```
 
+Make sure the HTTP server is running (test it with your navigator).
 
 
-You need to know the domain name that is pointing to your server and have the DNS already setup.
-
-You need to get a certificate (for free it is better and today possible with [Certbot](https://certbot.eff.org/)
-
-Then edit the `config.js` file to put the certificate and the private key filename.
-
-You can start your server with:
+Run certbot. Answer to all questions (mail, agree terms&conditions, domain).
 
 ```
-$ sudo npm start
+$ cd 
+$ cd example_https/webroot
+$ sudo certbot certonly --webroot -w $(pwd)
 ```
+
+You should see a congratulation message.
+
+Stop the HTTP server:
+```
+$ cd
+$ cd example_https
+$ sudo forever stop server.js
+```
+
+Edit the `config.js` file to include HTTPS.
+```
+$ vi config.js
+```
+
+Set `httpOnly` to false.
+Set your domain name.
+```
+// production config
+
+const domain = 'foobar.jlg-consulting.com';
+
+module.exports = {
+	httpOnly: false,
+	privateKeyFilename: `/etc/letsencrypt/live/${domain}/privkey.pem`,
+	certificateFilename: `/etc/letsencrypt/live/${domain}/fullchain.pem`,
+};
+
+```
+
+Start the server.
+```
+$ sudo forever start server.js
+```
+
+Open chrome and go to your site in https:
+```
+https://<yourdomain>
+```
+
+It should works !
 
 # License
 
