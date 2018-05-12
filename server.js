@@ -19,19 +19,22 @@ httpServer.listen(80, () => {
 	console.log('HTTP server started on port 80');
 });
 
-if (!config.httpOnly) {
-	const https = require('https');
-	const fs = require('fs');
-
-	const privateKey = fs.readFileSync(config.privateKeyFilename, 'utf8');
-	const certificate = fs.readFileSync(config.certificateFilename, 'utf8');
-	const credentials = { key: privateKey, cert: certificate };
-	const httpsServer = https.createServer(credentials, app);
-
-	httpsServer.listen(443, () => {
-		console.log('HTTP server started on port 443');
-	});
+if (config.httpOnly) {
+	return;
 }
+// https
+const https = require('https');
+const fs = require('fs');
+
+const privateKey = fs.readFileSync(config.privateKeyFilename, 'utf8');
+const certificate = fs.readFileSync(config.certificateFilename, 'utf8');
+const credentials = { key: privateKey, cert: certificate };
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(443, () => {
+	console.log('HTTP server started on port 443');
+});
+
 
 
 
