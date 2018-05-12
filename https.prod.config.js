@@ -1,3 +1,5 @@
+// production config
+
 const domain = 'gce.jlg-consulting.com';
 
 module.exports = {
